@@ -3,3 +3,5 @@ export const insertItem = '/acount/record/insert';
 export const AcountItems = '/acount/record/details';
 export const AcountItemDelete = '/acount/record/delete';
 export const AcountItemUpdate = '/acount/record/update';
+export const StillOnDetailApi = '/still/detailInfo';
+export const AddStillOnDetailApi = '/still/addDetailInfo'

@@ -2,22 +2,23 @@ import  createError from 'http-errors';
 import express  from 'express';
 import path  from 'path';
 import cookieParser from 'cookie-parser';
-import logger  from 'morgan';
 import indexRouter  from './routes/index';
 import usersRouter  from './routes/users';
 import basicDB from './database/Sqlite';
 import cors from 'cors';
+import log4js, { LuxoaileLog } from './log/KttLog';
 const app = express();
+const LOGGER = new LuxoaileLog("app.ts");
 
 
-
-console.log('=======begin init sqlite========');
+LOGGER.log('info', '=======begin init sqlite========');
 basicDB.init();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
+const logger = log4js.getLogger('http');
+app.use(log4js.connectLogger(logger, {level: 'info'}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

@@ -1,11 +1,14 @@
 import sqlite3, { Database, RunResult, ERROR, Statement } from "sqlite3";
-import { BASIC_DB } from "../common/DatabaseCons";
-import { CREATE_ACOUNT_TABLE, CREATE_RECORD_ITEM_TABLE, DELETE_ACOUNT, INSERT_ACOUNT, INSERT_INIT_ITEM, QUERY_TABLES, QUERY_TEST, SELECT_ACOUNT_WITH_DATE, SELECT_ALL_ITEMS, UPDATE_ACOUNT } from "./Query";
+import { BASIC_DB, BASIC_DB_DIR } from "../common/DatabaseCons";
+import { CREATE_ACOUNT_TABLE, CREATE_RECORD_ITEM_TABLE, DELETE_ACOUNT, INSERT_ACOUNT, INSERT_INIT_ITEM, INSERT_STILLON, QUERY_TABLES, QUERY_TEST, SELECT_ACOUNT_WITH_DATE, SELECT_ALL_ITEMS, SELECT_STILLONRECORD_WITH_DATE, UPDATE_ACOUNT } from "./Query";
 import { acountTable, recordItemsTable } from "../common/publicConfig/Public";
 import { table } from "console";
-import { resolve } from "path";
-import { AcountInfo } from "../common/VO/Vobject";
+import { resolve, join } from "path";
+import { AcountInfo, StillOnDetail } from "../common/VO/Vobject";
 import { combineDateSearchString } from "../common/Util";
+import { LuxoaileLog } from "../log/KttLog";
+
+const LOGGER = new LuxoaileLog("BasicDB");
 
 export interface Table {
     name: string,
@@ -21,7 +24,7 @@ class BasicDB {
         new Promise<void>(resolve => {
             this.database.all(QUERY_TABLES, (err, res: Table[]) => {
                 if (err !== null) {
-                    console.log('query tables failed! ', err);
+                    LOGGER.log('error', 'query tables failed! ', err);
                 }
                 this.tables = res;
                 resolve();
@@ -61,6 +64,14 @@ class BasicDB {
         });
     }
 
+    queryStillOnItems() {
+        return new Promise<StillOnDetail[]>((resolve) => {
+            this.database.all(SELECT_STILLONRECORD_WITH_DATE, (err, rows: StillOnDetail[]) => {
+                resolve(rows);
+            })
+        });
+    }
+
     insertAcountInfo(value: AcountInfo) {
         return new Promise<RunResult>(resolve => {
             this.database.run(INSERT_ACOUNT, { $type: value.type, $date: value.date, $money: value.money, $note: value.note }, (res: RunResult, err: Error) => {
@@ -72,7 +83,7 @@ class BasicDB {
     runSqliteCommand(command: string) {
         this.database.run(command, (res: RunResult, err: Error) => {
             if (err === null) {
-                console.log('runSqliteCommand failed ', err);
+                LOGGER.log('error', 'runSqliteCommand failed ', err);
             }
         })
     }
@@ -85,10 +96,14 @@ class BasicDB {
         this.database.run(UPDATE_ACOUNT, {$money: money, $note: note, $id: id})
     }
 
+    insertStillOnItem(item: StillOnDetail) {
+        this.database.run(INSERT_STILLON, {$year: item.year, $month: item.month, $day: item.day, $info: item.info, $status: item.status})
+    }
+
     constructor() {
-        this.database = new sqlite3.Database(BASIC_DB, (err) => {
+        this.database = new sqlite3.Database(join(BASIC_DB_DIR, BASIC_DB), (err) => {
             if (err !== null) {
-                console.log('get or create db failed! err:', err)
+                LOGGER.log('error', 'get or create db failed! err:', err)
             }
         });
     }

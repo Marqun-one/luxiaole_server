@@ -1,4 +1,4 @@
-import { acountTable, recordItemsTable } from "../common/publicConfig/Public";
+import { acountTable, recordItemsTable, stillOnTable } from "../common/publicConfig/Public";
 export const QUERY_TABLES = `SELECT name FROM sqlite_master `;
 export const QUERY_TEST = `SELECT * FROM basic `;
 
@@ -49,6 +49,17 @@ export const SELECT_ACOUNT_WITH_DATE =
                      from ${acountTable} left join ${recordItemsTable} 
                      on acount.type = recordItem.id  where date like $date`
 
+// 查询
+export const SELECT_STILLONRECORD_WITH_DATE = 
+                 `select 
+                     id, 
+                     year, 
+                     month, 
+                     day,
+                     info,
+                     status
+                     from ${stillOnTable}`
+
 // 插入账单
 export const INSERT_ACOUNT = `insert into acount (type, date, money, note) values ($type, $date, $money, $note)`
 
@@ -57,3 +68,6 @@ export const DELETE_ACOUNT = `delete from ${acountTable} where id = $id`
 
 // 更新账单
 export const UPDATE_ACOUNT = `update ${acountTable} set money = $money, note = $note where id = $id`
+
+// 插入坚持数据
+export const INSERT_STILLON = `insert into ${stillOnTable} (year, month, day, info, status) values ($year, $month, $day, $info, $status)`

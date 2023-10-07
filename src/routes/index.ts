@@ -1,14 +1,16 @@
 import express from 'express'
-import { AcountItemDelete, AcountItemUpdate, AcountItems, insertItem, recordItems } from '../common/publicConfig/Api';
+import { AcountItemDelete, AcountItemUpdate, AcountItems, AddStillOnDetailApi, StillOnDetailApi, insertItem, recordItems } from '../common/publicConfig/Api';
 import basicDB, { Table } from '../database/Sqlite';
 import url from 'url';
-import { AcountInfo, AcountTableDetail, SelectItems } from '../common/VO/Vobject'
+import { AcountInfo, AcountTableDetail, SelectItems, StillOnDetail } from '../common/VO/Vobject'
 import { processString } from '../common/Util';
+import { LuxoaileLog } from '../log/KttLog';
 const router = express.Router();
+const LOGGER = new LuxoaileLog("Router");
 
 /* GET home page. */
 router.get('/', function (req: any, res: any, next: any) {
-  console.log("get a connect /")
+  LOGGER.log('info', "get a connect /")
   res.render('index', { title: 'Express' });
 
 });
@@ -16,7 +18,7 @@ router.get('/', function (req: any, res: any, next: any) {
 
 /* GET home page. */
 router.post('/api/login', function (req: any, res: any, next: any) {
-  console.log('get a connect')
+  LOGGER.log('info', "get a connect /")
   // res.headers['Access-Control-Allow-Origin'] = req.environ['HTTP_ORIGIN']
   // res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
   // 设置服务器支持的所有头信息字段
@@ -24,7 +26,7 @@ router.post('/api/login', function (req: any, res: any, next: any) {
 });
 
 router.get('/api/login', function (req: any, res: any, next: any) {
-  console.log('get a connect')
+  LOGGER.log('info', "get a connect /")
   // res.headers['Access-Control-Allow-Origin'] = req.environ['HTTP_ORIGIN']
   // res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
   // 设置服务器支持的所有头信息字段
@@ -57,8 +59,15 @@ router.get(AcountItems, async function (req, res, next) {
   let dateDetail: AcountTableDetail = JSON.parse(query.params as string);
   dateDetail.month = processString(dateDetail.month);
   dateDetail.year = processString(dateDetail.year);
-  console.log(dateDetail);
   await basicDB.queryAcountItems(dateDetail.year, dateDetail.month).then(values => {
+    let jsonData = JSON.stringify(values);
+    res.send(jsonData);
+  })
+});
+
+// get /still/detailInfo
+router.get(StillOnDetailApi, async function (req, res, next) {
+  await basicDB.queryStillOnItems().then(values => {
     let jsonData = JSON.stringify(values);
     res.send(jsonData);
   })
@@ -85,8 +94,15 @@ router.post(AcountItemDelete, async function (req, res, next) {
 
 // post '/acount/record/update'
 router.post(AcountItemUpdate, async function (req, res, next) {
-  const acountInfo = req.body;
+  const acountInfo= req.body;
   basicDB.updateAcountById(acountInfo.id, acountInfo.money, acountInfo.note);
+  res.send('success'); 
+});
+
+// post '/still/addDetailInfo'
+router.post(AddStillOnDetailApi, async function (req, res, next) {
+  const stillOnItem: StillOnDetail  = req.body;
+  basicDB.insertStillOnItem(stillOnItem);
   res.send('success'); 
 });
 

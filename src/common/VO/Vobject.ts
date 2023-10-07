@@ -17,3 +17,12 @@ export interface AcountInfo {
     year: string;
     month: string;
   }
+
+  export interface StillOnDetail {
+    id: number;
+    year: number;
+    month: number;
+    day: number;
+    info: string;
+    status: string;
+  }
