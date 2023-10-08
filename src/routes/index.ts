@@ -1,5 +1,5 @@
 import express from 'express'
-import { AcountItemDelete, AcountItemUpdate, AcountItems, AddStillOnDetailApi, StillOnDetailApi, insertItem, recordItems } from '../common/publicConfig/Api';
+import { AcountItemDelete, AcountItemUpdate, AcountItems, AddStillOnDetailApi, DelStillOnDetailApi, StillOnDetailApi, insertItem, recordItems } from '../common/publicConfig/Api';
 import basicDB, { Table } from '../database/Sqlite';
 import url from 'url';
 import { AcountInfo, AcountTableDetail, SelectItems, StillOnDetail } from '../common/VO/Vobject'
@@ -103,6 +103,13 @@ router.post(AcountItemUpdate, async function (req, res, next) {
 router.post(AddStillOnDetailApi, async function (req, res, next) {
   const stillOnItem: StillOnDetail  = req.body;
   basicDB.insertStillOnItem(stillOnItem);
+  res.send('success'); 
+});
+
+// post '/still/delDetailInfo'
+router.post(DelStillOnDetailApi, async function (req, res, next) {
+  const stillOnItem: StillOnDetail  = req.body;
+  basicDB.delStillOnItem(stillOnItem);
   res.send('success'); 
 });
 

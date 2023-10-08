@@ -1,6 +1,6 @@
 import sqlite3, { Database, RunResult, ERROR, Statement } from "sqlite3";
 import { BASIC_DB, BASIC_DB_DIR } from "../common/DatabaseCons";
-import { CREATE_ACOUNT_TABLE, CREATE_RECORD_ITEM_TABLE, DELETE_ACOUNT, INSERT_ACOUNT, INSERT_INIT_ITEM, INSERT_STILLON, QUERY_TABLES, QUERY_TEST, SELECT_ACOUNT_WITH_DATE, SELECT_ALL_ITEMS, SELECT_STILLONRECORD_WITH_DATE, UPDATE_ACOUNT } from "./Query";
+import { CREATE_ACOUNT_TABLE, CREATE_RECORD_ITEM_TABLE, DELETE_ACOUNT, DELETE_STILLON, INSERT_ACOUNT, INSERT_INIT_ITEM, INSERT_STILLON, QUERY_TABLES, QUERY_TEST, SELECT_ACOUNT_WITH_DATE, SELECT_ALL_ITEMS, SELECT_STILLONRECORD_WITH_DATE, UPDATE_ACOUNT } from "./Query";
 import { acountTable, recordItemsTable } from "../common/publicConfig/Public";
 import { table } from "console";
 import { resolve, join } from "path";
@@ -98,6 +98,10 @@ class BasicDB {
 
     insertStillOnItem(item: StillOnDetail) {
         this.database.run(INSERT_STILLON, {$year: item.year, $month: item.month, $day: item.day, $info: item.info, $status: item.status})
+    }
+
+    delStillOnItem(item: StillOnDetail) {
+        this.database.run(DELETE_STILLON, {$year: item.year, $month: item.month, $day: item.day, $info: item.info, $status: item.status})
     }
 
     constructor() {

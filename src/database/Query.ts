@@ -71,3 +71,11 @@ export const UPDATE_ACOUNT = `update ${acountTable} set money = $money, note = $
 
 // 插入坚持数据
 export const INSERT_STILLON = `insert into ${stillOnTable} (year, month, day, info, status) values ($year, $month, $day, $info, $status)`
+
+// 删除坚持数据
+export const DELETE_STILLON = `delete from ${stillOnTable} 
+                                     where year = $year and
+                                           month = $month and
+                                           day = $day and
+                                           info = $info and
+                                           status = $status`
